@@ -1,0 +1,19 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import RenameField
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from a data source
+datasource = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name")
+
+# Rename the column "old_column_name" to "new_column_name"
+renamed_data = RenameField.apply(frame=datasource, old_name="old_column_name", new_name="new_column_name")
+
+# Convert the renamed data back to a Spark DataFrame
+renamed_dataframe = renamed_data.toDF()
+
+# Display the renamed DataFrame
+renamed_dataframe.show()
