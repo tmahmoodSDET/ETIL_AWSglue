@@ -1,0 +1,22 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import DropNullFields
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from a data source
+datasource = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name")
+
+# Specify the columns in which null values should be dropped
+columns_to_drop_null = ["column1", "column2", "column3"]
+
+# Drop rows containing null values in the specified columns
+dropped_null_data = DropNullFields.apply(frame=datasource, paths=columns_to_drop_null)
+
+# Convert the dropped null data back to a Spark DataFrame
+dropped_null_dataframe = dropped_null_data.toDF()
+
+# Display the DataFrame with null values dropped
+dropped_null_dataframe.show()
