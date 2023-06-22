@@ -1,0 +1,19 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import Filter
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from a data source
+datasource = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name")
+
+# Apply a filter to keep rows where column "age" is greater than 30
+filtered_data = Filter.apply(frame=datasource, f=lambda x: x["age"] > 30)
+
+# Convert the filtered data back to a Spark DataFrame
+filtered_dataframe = filtered_data.toDF()
+
+# Display the filtered DataFrame
+filtered_dataframe.show()
