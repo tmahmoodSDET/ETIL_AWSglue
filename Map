@@ -1,0 +1,29 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import Map
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from a data source
+datasource = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name")
+
+# Define the function to be applied to each row
+def map_function(row):
+    # Perform transformations on the row and return a new row
+    # Example: Extract specific columns and transform their values
+    new_row = {
+        "new_column1": row["column1"].upper(),
+        "new_column2": row["column2"] * 2
+    }
+    return new_row
+
+# Apply the map function to each row in the dataset
+mapped_data = Map.apply(frame=datasource, f=map_function)
+
+# Convert the mapped data back to a Spark DataFrame
+mapped_dataframe = mapped_data.toDF()
+
+# Display the mapped DataFrame
+mapped_dataframe.show()
