@@ -1,0 +1,26 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import Join
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from the first data source
+datasource1 = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name1")
+
+# Read data from the second data source
+datasource2 = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name2")
+
+# Specify the join condition and type
+join_condition = [("common_key", "common_key")]
+join_type = "inner"
+
+# Join the two datasets based on the common key
+joined_data = Join.apply(frame1=datasource1, frame2=datasource2, keys1="common_key", keys2="common_key", transformation_ctx="joined_data", join_type=join_type)
+
+# Convert the joined data back to a Spark DataFrame
+joined_dataframe = joined_data.toDF()
+
+# Display the joined DataFrame
+joined_dataframe.show()
