@@ -1,0 +1,25 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.transforms import ApplyMapping, Cast
+
+# Create Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+
+# Read data from a data source
+datasource = glueContext.create_dynamic_frame.from_catalog(database="database_name", table_name="table_name")
+
+# Define the desired schema for casting
+schema = [("column_name", "new_data_type")]
+
+# Apply mapping to handle the schema
+mapped_data = ApplyMapping.apply(frame=datasource, mappings=schema)
+
+# Cast the column to the new data type
+casted_data = Cast.apply(frame=mapped_data, transformation_ctx="casted_data", 
+                         target_type="new_data_type", source="column_name")
+
+# Convert the casted data back to a Spark DataFrame
+casted_dataframe = casted_data.toDF()
+
+# Display the casted DataFrame
